@@ -3,19 +3,26 @@ import ReactDOM from 'react-dom/client';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import createSagaMiddleware from 'redux-saga';
 import App from './App';
 import { rootReducer } from './redux/rootReducer';
 import reportWebVitals from './reportWebVitals';
+import { forbiddenWordsMiddleWare } from './redux/middleware';
+import { sagaWatcher } from './redux/sagas';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const saga = createSagaMiddleware();
 
 const store = createStore(
     rootReducer,
     compose(
-        applyMiddleware(thunk),
+        applyMiddleware(thunk, forbiddenWordsMiddleWare, saga),
         window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
     ),
 );
+
+saga.run(sagaWatcher);
 
 root.render(
     <React.StrictMode>
